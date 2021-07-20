@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+{% if list_of_lists %}
+    <fieldset>
+        <h1>Lists of Task</h1>
+        {% for list in list_of_lists %}
+        <li><a href="{% url 'DoIt:tasks' list.id list.name%}">{{ list.name }}</a></li>
+        {% endfor %}
+    </fieldset>
+{% else %}
+    <p>No lists available</p>
+{% endif %}
+</body>
+</html>
