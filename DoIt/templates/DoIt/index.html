@@ -16,7 +16,8 @@
         {% endfor %}
     </fieldset>
 {% else %}
-    <p>No lists available</p>
+<p>No lists available</p>
 {% endif %}
+<a href="{% url 'DoIt:new_list' %}">Add a new List</a>
 </body>
 </html>
