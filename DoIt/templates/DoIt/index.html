@@ -14,10 +14,10 @@
         {% for list in list_of_lists %}
         <li><a href="{% url 'DoIt:tasks' list.id list.name%}">{{ list.name }}</a></li>
         {% endfor %}
+        {% else %}
+        <h1>No lists available</h1>
+        {% endif %}
+        <br><a href="{% url 'DoIt:new_list' %}">Add a new List</a>
     </fieldset>
-{% else %}
-<p>No lists available</p>
-{% endif %}
-<a href="{% url 'DoIt:new_list' %}">Add a new List</a>
 </body>
 </html>

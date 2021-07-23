@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+
+<form method="post">
+    <fieldset>
+        <h1>Adding a new task to the {{ list_name }} list</h1>
+
+        {% if error_message %}
+            <p><strong>{{ error_message }}</strong></p>
+        {% endif %}
+
+        {% if messages %}
+            {% for message in messages %}
+                <p><strong>{{ message }}</strong></p>
+            {% endfor %}
+        {% endif %}
+
+        Name: <input type="text" name="name">
+        Description: <input type="text" name="description">
+        Is done ?: <input type="checkbox" name="is_done">
+        Date of start: <input type="date" name="start_date">
+        How much time it takes <input type="number" name="time_it_takes">
+        Is important ?: <input type="checkbox" name="is_important">
+
+    </fieldset>
+</form>
+
+</body>
+</html>

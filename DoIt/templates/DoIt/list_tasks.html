@@ -13,6 +13,8 @@
     {% for task in task_of_list %}
     <li><a href="{% url 'DoIt:details' task.id %}" >{{ task.name }}</a></li>
     {% endfor %}
+
+    <a href="{% url 'DoIt:new_task' view.kwargs.pk %}">Add a new Task</a>
 </fieldset>
 </body>
 </html>

@@ -16,7 +16,7 @@ class Task(models.Model):
     end_date = models.DateTimeField()
     time_it_takes = models.IntegerField('How much time it takes')  # in minutes
     is_important = models.BooleanField()
-    list = models.ForeignKey(List, on_delete=models.PROTECT)
+    list = models.ForeignKey(List, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name

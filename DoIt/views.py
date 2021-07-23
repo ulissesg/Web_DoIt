@@ -18,7 +18,6 @@ class IndexView(generic.ListView):
 
 
 def new_list(request):
-
     if request.method == 'POST':
         if request.POST['name']:
             list_name = request.POST['name']
@@ -39,17 +38,23 @@ def new_list(request):
         return HttpResponse(template.render({}, request))
 
 
-class ListCreated(generic.DetailView):
-    model = List
-    template_name = 'DoIt/list_created.html'
-
-
 class ListTasksView(generic.ListView):
     template_name = 'DoIt/list_tasks.html'
     context_object_name = 'task_of_list'
 
     def get_queryset(self):
         return Task.objects.filter(list=self.kwargs.get('pk'))
+
+
+def new_task(request, pk):
+    if request.method == 'POST':
+        pass
+
+    else:
+        context = {
+            'list_name': List.objects.get(pk=pk).name,
+        }
+        return render(request, 'DoIt/new_task.html', context)
 
 
 class DetailsTaskView(generic.DetailView):
