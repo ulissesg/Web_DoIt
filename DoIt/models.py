@@ -10,12 +10,12 @@ class List(models.Model):
 
 class Task(models.Model):
     name = models.CharField(max_length=200)
-    description = models.CharField(max_length=400)
-    is_done = models.BooleanField()
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
-    time_it_takes = models.IntegerField('How much time it takes')  # in minutes
-    is_important = models.BooleanField()
+    description = models.CharField(max_length=400, blank=True, null=True)
+    is_done = models.BooleanField(blank=True, null=True)
+    start_date = models.DateField(blank=True, null=True)
+    end_date = models.DateField(blank=True, null=True)
+    time_it_takes = models.IntegerField('How much time it takes', blank=True, null=True)  # in minutes
+    is_important = models.BooleanField(blank=True, null=True)
     list = models.ForeignKey(List, on_delete=models.CASCADE)
 
     def __str__(self):
