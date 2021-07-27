@@ -14,7 +14,7 @@ class Task(models.Model):
     is_done = models.BooleanField(blank=True, null=True)
     start_date = models.DateField(blank=True, null=True)
     end_date = models.DateField(blank=True, null=True)
-    time_it_takes = models.IntegerField('How much time it takes', blank=True, null=True)  # in minutes
+    time_it_takes = models.IntegerField('How much time it takes in minutes', blank=True, null=True)
     is_important = models.BooleanField(blank=True, null=True)
     list = models.ForeignKey(List, on_delete=models.CASCADE)
 

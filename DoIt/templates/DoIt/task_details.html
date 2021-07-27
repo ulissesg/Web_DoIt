@@ -9,11 +9,11 @@
     <title>{{ task.name }}</title>
 </head>
 <body>
-<fieldset class="border border-secondary rounded m-5">
+<div class="border border-secondary rounded m-5">
 
     <h1 class="text-center my-4">{{ task.name }}</h1>
 
-    <fieldset class="m-5 px-5">
+    <div class="m-5 px-5">
         <p>{{ task.description }}</p>
         <p>Is done: {{ task.is_done }}</p>
         <p>Start Date: {{ task.start_date }}</p>
@@ -21,13 +21,15 @@
         <p>How much time it takes: {{ task.time_it_takes }}  minute{{ task.time_it_takes|pluralize }}</p>
         <p>Is important: {{ task.is_important }}</p>
         <p>Task of the list: {{ task.list.name }}</p>
-    </fieldset>
+    </div>
 
     <ul class="list-group mx-5 my-2 px-5">
             <li class="list-group-item text-center">
-            <a href="{% url 'DoIt:tasks' task.list.id task.list.name %}" class="link-secondary " style="text-decoration:none">Go back to the List of tasks</a>
+            <a href="{% url 'DoIt:tasks' task.list.id  %}" class="link-secondary text-decoration-none " >
+                Go back to the List of tasks
+            </a>
         </li>
     </ul>
-</fieldset>
+</div>
 </body>
 </html>
