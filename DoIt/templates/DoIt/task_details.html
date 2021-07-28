@@ -5,29 +5,17 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <title>{{ task.name }}</title>
+    <title>Document</title>
 </head>
 <body>
-<fieldset class="border border-secondary rounded m-5">
-
-    <h1 class="text-center my-4">{{ task.name }}</h1>
-
-    <fieldset class="m-5 px-5">
-        <p>{{ task.description }}</p>
-        <p>Is done: {{ task.is_done }}</p>
-        <p>Start Date: {{ task.start_date }}</p>
-        <p>End Date: {{ task.end_date }}</p>
-        <p>How much time it takes: {{ task.time_it_takes }}  minute{{ task.time_it_takes|pluralize }}</p>
-        <p>Is important: {{ task.is_important }}</p>
-        <p>Task of the list: {{ task.list.name }}</p>
-    </fieldset>
-
-    <ul class="list-group mx-5 my-2 px-5">
-            <li class="list-group-item text-center">
-            <a href="{% url 'DoIt:tasks' task.list.id task.list.name %}" class="link-secondary " style="text-decoration:none">Go back to the List of tasks</a>
-        </li>
-    </ul>
+<fieldset>
+    <h1>{{ task.name }}</h1>
+    <p>{{ task.description }}</p>
+    <p>Is done: {{ task.is_done }}</p>
+    <p>Start Date: {{ task.start_date }}</p>
+    <p>End Date: {{ task.end_date }}</p>
+    <p>How much time it takes: {{ task.time_it_takes }}  minute{{ task.time_it_takes|pluralize }}</p>
+    <p>Is important: {{ task.is_important }}</p>
 </fieldset>
 </body>
 </html>

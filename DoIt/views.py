@@ -1,8 +1,6 @@
 # Create your views here.
-from webbrowser import get
-
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 from django.contrib import messages
 from django.template import loader
 from django.urls import reverse
@@ -27,7 +25,7 @@ def new_list(request):
             nw_list.save()
 
             messages.info(request, 'List created successfully')
-            return HttpResponseRedirect(reverse('DoIt:index'))
+            return HttpResponseRedirect(reverse('DoIt:new_list'))
 
         else:
             # Redisplay the form to create a list.
@@ -42,7 +40,7 @@ def new_list(request):
 
 class ListTasksView(generic.ListView):
     template_name = 'DoIt/list_tasks.html'
-    context_object_name = 'tasks_of_list'
+    context_object_name = 'task_of_list'
 
     def get_queryset(self):
         return Task.objects.filter(list=self.kwargs.get('pk'))
@@ -50,37 +48,11 @@ class ListTasksView(generic.ListView):
 
 def new_task(request, pk):
     if request.method == 'POST':
-        # name is the only mandatory field to add a new task
-        if request.POST['name']:
-            task_name = request.POST['name']
-            task_description = request.POST['description']
-            task_is_done = True if request.POST.get('is_done') else False
-            task_start_date = None if not request.POST['start_date'] else request.POST['start_date']
-            print('startdate: ' + str(task_start_date))
-            task_end_date = None if not request.POST['end_date'] else request.POST['end_date']
-            print('end date: ' + str(task_end_date))
-            task_time_it_takes = request.POST.get('time_it_takes', 0)
-            task_is_important = True if request.POST.get('is_important') else False
-            nw_task = Task(name=task_name, description=task_description, is_done=task_is_done,
-                           start_date=task_start_date, end_date=task_end_date,
-                           time_it_takes=task_time_it_takes, is_important=task_is_important,
-                           list=get_object_or_404(List, pk=pk))
-            nw_task.save()
-
-            messages.info(request, 'Task created successfully')
-            return HttpResponseRedirect(reverse('DoIt:tasks',
-                                                kwargs={'pk': pk, 'name': get_object_or_404(List, pk=pk).name}))
-
-        else:
-            # Redisplay the form to create a task.
-            return render(request, 'DoIt/new_task.html', {
-                'list_name': get_object_or_404(List, pk=pk).name,
-                'error_message': "You didn't typed a name for the task.",
-            })
+        pass
 
     else:
         context = {
-            'list_name': get_object_or_404(List, pk=pk).name,
+            'list_name': List.objects.get(pk=pk).name,
         }
         return render(request, 'DoIt/new_task.html', context)
 
@@ -88,4 +60,3 @@ def new_task(request, pk):
 class DetailsTaskView(generic.DetailView):
     model = Task
     template_name = 'DoIt/task_details.html'
-
