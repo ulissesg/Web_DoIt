@@ -5,19 +5,42 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>DoIt</title>
 </head>
 <body>
-{% if list_of_lists %}
-    <fieldset>
-        <h1>Lists of Task</h1>
-        {% for list in list_of_lists %}
-        <li><a href="{% url 'DoIt:tasks' list.id list.name%}">{{ list.name }}</a></li>
-        {% endfor %}
+    <div>
+        {% if list_of_lists %}
+            <h1>Lists</h1>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <p><strong>{{ message }}</strong></p>
+                {% endfor %}
+            {% endif %}
+
+            <ul>
+                {% for list in list_of_lists %}
+                    <li>
+                        <a href="{% url 'DoIt:tasks' list.id %}">{{ list.name }}</a>
+                        <div>
+                            <form method="post">
+                                {% csrf_token %}
+                                <button type="submit" onclick="">Edit</button>
+                            </form>
+                            <form method="post">
+                                {% csrf_token %}
+                                <button type="submit" onclick="">Delete</button>
+                            </form>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ul>
         {% else %}
-        <h1>No lists available</h1>
+            <h1>No lists available</h1>
         {% endif %}
-        <br><a href="{% url 'DoIt:new_list' %}">Add a new List</a>
-    </fieldset>
+    </div>
+    <footer>
+        <button onclick="location.href= '{% url 'DoIt:new_list' %}'">Add a new List</button>
+    </footer>
 </body>
 </html>

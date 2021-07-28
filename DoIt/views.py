@@ -25,7 +25,7 @@ def new_list(request):
             nw_list.save()
 
             messages.info(request, 'List created successfully')
-            return HttpResponseRedirect(reverse('DoIt:new_list'))
+            return HttpResponseRedirect(reverse('DoIt:index'))
 
         else:
             # Redisplay the form to create a list.
@@ -52,7 +52,7 @@ def new_task(request, pk):
 
     else:
         context = {
-            'list_name': List.objects.get(pk=pk).name,
+            'list': List.objects.get(pk=pk),
         }
         return render(request, 'DoIt/new_task.html', context)
 

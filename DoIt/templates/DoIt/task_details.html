@@ -5,17 +5,21 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>DoIt</title>
 </head>
 <body>
-<fieldset>
-    <h1>{{ task.name }}</h1>
-    <p>{{ task.description }}</p>
-    <p>Is done: {{ task.is_done }}</p>
-    <p>Start Date: {{ task.start_date }}</p>
-    <p>End Date: {{ task.end_date }}</p>
-    <p>How much time it takes: {{ task.time_it_takes }}  minute{{ task.time_it_takes|pluralize }}</p>
-    <p>Is important: {{ task.is_important }}</p>
-</fieldset>
+    <div>
+        <h1>{{ task.name }}</h1>
+        <p>{{ task.description }}</p>
+        <p>Is done: {{ task.is_done }}</p>
+        <p>Start Date: {{ task.start_date }}</p>
+        <p>End Date: {{ task.end_date }}</p>
+        <p>How much time it takes: {{ task.time_it_takes }}  minute{{ task.time_it_takes|pluralize }}</p>
+        <p>Is important: {{ task.is_important }}</p>
+        <p>List: {{ task.list.name }}</p>
+    </div>
+    <footer>
+        <button onclick="location.href= '{% url 'DoIt:tasks' task.list.id %}'" >Go back to the list</button>
+    </footer>
 </body>
 </html>
