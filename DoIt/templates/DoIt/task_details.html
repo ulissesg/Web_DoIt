@@ -5,11 +5,13 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <title>DoIt</title>
 </head>
-<body>
-    <div>
-        <h1>{{ task.name }}</h1>
+<body class="border border-secondary rounded m-5 px-5 ">
+    <h1 class="text-center my-4">{{ task.name }}</h1>
+    <div class="mx-5 px-5">
         <p>{{ task.description }}</p>
         <p>Is done: {{ task.is_done }}</p>
         <p>Start Date: {{ task.start_date }}</p>
@@ -18,8 +20,11 @@
         <p>Is important: {{ task.is_important }}</p>
         <p>List: {{ task.list.name }}</p>
     </div>
-    <footer>
-        <button onclick="location.href= '{% url 'DoIt:tasks' task.list.id %}'" >Go back to the list</button>
+    <footer class="text-center m-4">
+        <button onclick="location.href= '{% url 'DoIt:tasks' task.list.id %}'"
+                class="btn btn-secondary text-decoration-none">
+            Go back to the list
+        </button>
     </footer>
 </body>
 </html>

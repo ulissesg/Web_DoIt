@@ -5,20 +5,29 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <title>DoIt</title>
 </head>
-<body>
+<body class="border border-secondary rounded m-5 px-5 ">
     <div>
-        <h1>{{ page_title }} {{ list.name }}</h1>
+        <h1 class="text-center my-4">{{ page_title }} {{ list.name }}</h1>
 
-        <form method="post" >
+        <form method="post" class="mb-3 mx-5 px-5">
             {% csrf_token %}
+
             {{ form.as_p }}
-            <button type="submit" >Save</button>
+
+            <div class="text-center">
+                <button type="submit" class="btn btn-secondary m-1">Save</button>
+
+                <a href= "{% url 'DoIt:tasks' list.id %}"
+                   class="btn btn-secondary text-decoration-none m-1" >
+                    Go back to the list
+                </a>
+            </div>
+
         </form>
     </div>
-    <footer>
-        <button onclick="location.href= '{% url 'DoIt:tasks' list.id %}'" >Go back to the list</button>
-    </footer>
 </body>
 </html>

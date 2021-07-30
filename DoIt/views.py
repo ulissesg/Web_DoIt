@@ -61,7 +61,11 @@ class ListEditView(SuccessMessageMixin, generic.UpdateView):
 
 class ListDeleteView(generic.DeleteView):
     model = List
-    success_url = reverse_lazy('DoIt:index')
+
+    def get_success_url(self):
+        messages.info(self.request,
+                      'List ' + get_object_or_404(List, id=self.kwargs['pk']).name + ' deleted successfully')
+        return reverse_lazy('DoIt:index')
 
 
 class TaskForm(forms.ModelForm):

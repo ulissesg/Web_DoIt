@@ -5,26 +5,37 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <title>DoIt</title>
 </head>
-<body>
+<body class="border border-secondary rounded  m-5">
     {% if list_of_task %}
         <div>
-            <h1>Tasks of {{ list_of_task.first.list.name }}</h1>
+            <h1 class="text-center my-4">Tasks of {{ list_of_task.first.list.name }}</h1>
 
             {% if messages %}
                 {% for message in messages %}
-                    <p><strong>{{ message }}</strong></p>
+                    <p class="text-center mb-4"><strong>{{ message }}</strong></p>
                 {% endfor %}
             {% endif %}
 
-            <ul>
+            <ul class="list-group mx-5 my-2 px-5">
                 {% for task in list_of_task %}
-                    <li>
-                        <a href="{% url 'DoIt:details' task.id %}" >{{ task.name }}</a>
-                        <div>
-                            <button onclick="location.href='{% url 'DoIt:task_edit' task.id %}'">Edit</button>
-                            <button onclick="location.href='{% url 'DoIt:task_delete' task.id %}'">Delete</button>
+                    <li class="list-group-item d-flex justify-content-evenly">
+                        <a href="{% url 'DoIt:details' task.id %}" class="link-secondary text-decoration-none">
+                            {{ task.name }}
+                        </a>
+                        <div class=" d-flex justify-content-evenly">
+                            <button onclick="location.href='{% url 'DoIt:task_edit' task.id %}'"
+                                    class="btn btn-primary m-1">
+                                Edit
+                            </button>
+
+                            <button onclick="location.href='{% url 'DoIt:task_delete' task.id %}'"
+                                    class="btn btn-danger m-1">
+                                Delete
+                            </button>
                         </div>
                     </li>
                 {% endfor %}
@@ -32,18 +43,25 @@
         </div>
     {% else %}
         <div>
-            <h1> No tasks available for this list </h1>
+            <h1 class="text-center my-4"> No tasks available for this list </h1>
 
             {% if messages %}
                 {% for message in messages %}
-                    <p><strong>{{ message }}</strong></p>
+                    <p class="text-center mb-4"><strong>{{ message }}</strong></p>
                 {% endfor %}
             {% endif %}
         </div>
     {% endif %}
-    <footer>
-        <button onclick="location.href= '{% url 'DoIt:new_task' view.kwargs.pk %}'">Add a new Task</button>
-        <button type="submit" onclick="location.href ='{% url 'DoIt:index' %}'">Go back to index</button>
+    <footer class="text-center m-4">
+        <button onclick="location.href= '{% url 'DoIt:new_task' view.kwargs.pk %}'"
+                class="btn btn-secondary text-decoration-none">
+            Add a new Task
+        </button>
+
+        <button type="submit" onclick="location.href ='{% url 'DoIt:index' %}'"
+                class="btn btn-secondary text-decoration-none">
+            Go back to index
+        </button>
     </footer>
 
 </body>
