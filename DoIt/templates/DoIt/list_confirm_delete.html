@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>DoIt</title>
+</head>
+<body>
+    <form method="post">
+        {% csrf_token %}
+        <p>Are you sure you want to delete the list "{{ list.name }}"?</p>
+
+        <button type="submit" >Confirm</button>
+        <a href="{% url 'DoIt:index' %}" >Cancel</a>
+    </form>
+</body>
+</html>

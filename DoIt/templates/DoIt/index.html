@@ -23,14 +23,8 @@
                     <li>
                         <a href="{% url 'DoIt:tasks' list.id %}">{{ list.name }}</a>
                         <div>
-                            <form method="post">
-                                {% csrf_token %}
-                                <button type="submit" onclick="">Edit</button>
-                            </form>
-                            <form method="post">
-                                {% csrf_token %}
-                                <button type="submit" onclick="">Delete</button>
-                            </form>
+                            <button onclick="location.href= '{% url 'DoIt:list_edit' list.id %}'">Edit</button>
+                            <button onclick="location.href= '{% url 'DoIt:list_delete' list.id %}'">Delete</button>
                         </div>
                     </li>
                 {% endfor %}

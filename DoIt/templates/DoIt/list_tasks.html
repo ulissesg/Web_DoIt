@@ -8,36 +8,43 @@
     <title>DoIt</title>
 </head>
 <body>
-    <div>
-        <h1>Tasks of {{ task_of_list.first.list.name }}</h1>
+    {% if list_of_task %}
+        <div>
+            <h1>Tasks of {{ list_of_task.first.list.name }}</h1>
 
-        {% if messages %}
-            {% for message in messages %}
-                <p><strong>{{ message }}</strong></p>
-            {% endfor %}
-        {% endif %}
+            {% if messages %}
+                {% for message in messages %}
+                    <p><strong>{{ message }}</strong></p>
+                {% endfor %}
+            {% endif %}
 
-        <ul>
-            {% for task in task_of_list %}
-                <li>
-                    <a href="{% url 'DoIt:details' task.id %}" >{{ task.name }}</a>
-                    <div>
-                            <form method="post">
-                                {% csrf_token %}
-                                <button type="submit" onclick="">Edit</button>
-                            </form>
-                            <form method="post">
-                                {% csrf_token %}
-                                <button type="submit" onclick="">Delete</button>
-                            </form>
+            <ul>
+                {% for task in list_of_task %}
+                    <li>
+                        <a href="{% url 'DoIt:details' task.id %}" >{{ task.name }}</a>
+                        <div>
+                            <button onclick="location.href='{% url 'DoIt:task_edit' task.id %}'">Edit</button>
+                            <button onclick="location.href='{% url 'DoIt:task_delete' task.id %}'">Delete</button>
                         </div>
-                </li>
-            {% endfor %}
-        </ul>
-    </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% else %}
+        <div>
+            <h1> No tasks available for this list </h1>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <p><strong>{{ message }}</strong></p>
+                {% endfor %}
+            {% endif %}
+        </div>
+    {% endif %}
     <footer>
         <button onclick="location.href= '{% url 'DoIt:new_task' view.kwargs.pk %}'">Add a new Task</button>
         <button type="submit" onclick="location.href ='{% url 'DoIt:index' %}'">Go back to index</button>
     </footer>
+
 </body>
 </html>

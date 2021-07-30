@@ -9,24 +9,14 @@
 </head>
 <body>
     <div>
-        <h1>New list</h1>
-
-        {% if error_message %}
-            <p><strong>{{ error_message }}</strong></p>
-        {% endif %}
-
-        {% if messages %}
-            {% for message in messages %}
-                <p><strong>{{ message }}</strong></p>
-            {% endfor %}
-        {% endif %}
+        <h1>{{ page_title }}</h1>
 
         <form method="post">
             {% csrf_token %}
 
-            Name:<input type="text" name="name">
+            {{ form.as_p }}
 
-            <input type="submit" value="Add list">
+            <input type="submit" value="Save">
 
         </form>
     </div>
