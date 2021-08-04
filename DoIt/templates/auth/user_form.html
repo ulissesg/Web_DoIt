@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="m-5">
+    <h1 class="text-center mb-5">{{ page_title }}</h1>
+
+
+    {% if messages %}
+        {% for message in messages %}
+            <p class="text-center mb-4"><strong>{{ message }}</strong></p>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="text-center mt-5">
+            <input type="submit" value="Save" class="btn btn-secondary">
+            <a href="{% url 'login' %}" class="text-decoration-none btn btn-secondary">Cancel</a>
+        </div>
+
+    </form>
+</div>
+
+{% endblock %}

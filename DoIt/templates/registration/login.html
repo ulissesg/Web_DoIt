@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="m-5 px-5 text-center">
+    <h2>Welcome to DoIt app</h2>
+    <h5 class="mb-3">Login</h5>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p class="text-center mb-4"><strong>{{ message }}</strong></p>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" class="border border-secondary rounded p-5">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="mt-5">
+            <button type="submit" class="btn btn-secondary ">Log In</button>
+            <a href="{% url 'DoIt:signup' %}" class="btn btn-secondary text-decoration-none ">
+                Sign up
+            </a>
+            <a href="{% url 'password_reset' %}" class="btn btn-secondary text-decoration-none ">
+                Forgot password ?
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}
