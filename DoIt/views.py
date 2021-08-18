@@ -158,13 +158,5 @@ class NewUserView(SuccessMessageMixin, generic.CreateView):
         context['page_title'] = 'New User'
         return context
 
-    # def form_valid(self, form):
-    #     try:
-    #         validate_password(form.instance.password, user=self.request.user)
-    #         return super(NewUserView, self).form_valid(form)
-    #     except ValidationError as e:
-    #         messages.info(self.request, e.__str__().strip("[]"))
-    #         return super(NewUserView, self).form_invalid(form)
-
     def get_success_message(self, cleaned_data):
         return 'User ' + self.request.POST['username'] + ' Added'
