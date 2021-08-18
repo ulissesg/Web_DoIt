@@ -18,7 +18,6 @@ class ListAdmin(admin.ModelAdmin):
     ]
     inlines = [TaskInLine]
     list_display = ('name', 'user')
-
     search_fields = ['name']
 
 

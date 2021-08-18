@@ -1,11 +1,15 @@
 # Create your views here.
 
 from django import forms
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.models import User
-from django.contrib.auth.password_validation import validate_password
+from django.contrib.auth.password_validation import validate_password, MinimumLengthValidator
 from django.contrib.messages.views import SuccessMessageMixin, messages
-from django.shortcuts import get_object_or_404
-from django.urls import reverse_lazy
+from django.core.exceptions import ValidationError
+from django.http import HttpResponseRedirect
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse_lazy, reverse
 from django.views import generic
 
 from DoIt.models import List, Task
@@ -138,13 +142,10 @@ class TaskDeleteView(generic.DeleteView):
         })
 
 
-class NewUserForm(forms.ModelForm):
+class NewUserForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ('username', 'first_name', 'last_name', 'email', 'password')
-        widgets = {
-            'password': forms.PasswordInput(),
-        }
+        fields = ('username', 'first_name', 'last_name', 'email')
 
 
 class NewUserView(SuccessMessageMixin, generic.CreateView):
@@ -157,13 +158,13 @@ class NewUserView(SuccessMessageMixin, generic.CreateView):
         context['page_title'] = 'New User'
         return context
 
-    def form_valid(self, form):
-        try:
-            validate_password(form.instance.password)
-            return super(NewUserView, self).form_valid(form)
-        except Exception as e:
-            messages.info(self.request, e.__str__().strip("[]"))
-            return super(NewUserView, self).form_invalid(form)
+    # def form_valid(self, form):
+    #     try:
+    #         validate_password(form.instance.password, user=self.request.user)
+    #         return super(NewUserView, self).form_valid(form)
+    #     except ValidationError as e:
+    #         messages.info(self.request, e.__str__().strip("[]"))
+    #         return super(NewUserView, self).form_invalid(form)
 
     def get_success_message(self, cleaned_data):
-        return 'User ' + self.request.POST['username'] + 'Added'
+        return 'User ' + self.request.POST['username'] + ' Added'
