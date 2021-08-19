@@ -17,8 +17,8 @@ def create_list(name, user):
     return List.objects.create(name=name, user=user)
 
 
-def create_task(name, lit):
-    return Task.objects.create(name=name, list=lit)
+def create_task(name, lit, time=None):
+    return Task.objects.create(name=name, list=lit, time_it_takes=time)
 
 
 class UserSignUpTest(TestCase):
@@ -461,4 +461,23 @@ class ListTasksViewTest(TestCase):
         self.assertNotContains(response, 'task2')
         self.assertContains(response, 'taskupdated')
 
-    # add timer with the time to complete all the tasks of the list
+    def test_total_minutes_clock(self):
+        """
+        Test the sum of all the minutes to conclude all tasks of one list, \
+        page returns the sum in minutes of all tasks
+        """
+        user = create_user('test', 'super123*secure')
+        self.client.force_login(user)
+        listest = create_list('list1', user)
+        task1 = create_task('task1', listest, 20)
+        task2 = create_task('task2', listest, 45)
+        task3 = create_task('task3', listest, 1000)
+        task4 = create_task('task4', listest, 350)
+        time_finish_list = task1.time_it_takes + task2.time_it_takes + \
+                           task3.time_it_takes + task4.time_it_takes
+        response = self.client.get(reverse('DoIt:tasks', kwargs={'pk': listest.id}))
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context['user'].is_authenticated)
+        self.assertContains(response, 'Remaining time to finish all tasks of the list is : '
+                            + str(time_finish_list) + ' minutes')
+        self.assertEqual(response.context['time_finish_list'], time_finish_list)

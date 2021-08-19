@@ -37,6 +37,15 @@ class ListTasksView(generic.ListView):
     def get_queryset(self):
         return Task.objects.filter(list=self.kwargs.get('pk'))
 
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super(ListTasksView, self).get_context_data(**kwargs)
+        tasks = context['list_of_task']
+        total = 0
+        for task in tasks:
+            total = total + int(task.time_it_takes or 0)
+        context['time_finish_list'] = total
+        return context
+
 
 class NewListView(SuccessMessageMixin, generic.CreateView):
     model = List

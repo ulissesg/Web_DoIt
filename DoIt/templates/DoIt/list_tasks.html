@@ -11,6 +11,8 @@
             {% endfor %}
         {% endif %}
 
+        <p class="mx-5 px-5">Remaining time to finish all tasks of the list is : {{ time_finish_list }} minutes</p>
+
         <ul class="list-group mx-5 my-2 px-5">
             {% for task in list_of_task %}
                 <li class="list-group-item d-flex justify-content-evenly">
