@@ -243,7 +243,7 @@ class UserLoginTest(TestCase):
                                       'Note that both fields may be case-sensitive')
 
 
-class IndexViewTest(TestCase):
+class IndexTest(TestCase):
 
     def test_user_is_not_authenticated(self):
         """
@@ -279,7 +279,7 @@ class IndexViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.context['user'].is_authenticated)
         self.assertSequenceEqual(response.context['list_of_lists'], [list1])
-        self.assertContains(response, 'list1')
+        self.assertContains(response, str(list1.name))
 
     def test_multiple_list_for_user(self):
         """
@@ -294,17 +294,17 @@ class IndexViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.context['user'].is_authenticated)
         self.assertSequenceEqual(response.context['list_of_lists'], [list1, list2])
-        self.assertContains(response, 'list1')
-        self.assertContains(response, 'list2')
+        self.assertContains(response, str(list1.name))
+        self.assertContains(response, str(list2.name))
 
         list3 = create_list('list3', user)
         response = self.client.get(reverse('DoIt:index'))
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.context['user'].is_authenticated)
         self.assertSequenceEqual(response.context['list_of_lists'], [list1, list2, list3])
-        self.assertContains(response, 'list1')
-        self.assertContains(response, 'list2')
-        self.assertContains(response, 'list3')
+        self.assertContains(response, str(list1.name))
+        self.assertContains(response, str(list2.name))
+        self.assertContains(response, str(list3.name))
 
     def test_delete_list(self):
         """
@@ -319,14 +319,14 @@ class IndexViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.context['user'].is_authenticated)
         self.assertSequenceEqual(response.context['list_of_lists'], [list1, list2])
-        self.assertContains(response, 'list1')
-        self.assertContains(response, 'list2')
+        self.assertContains(response, str(list1.name))
+        self.assertContains(response, str(list2.name))
 
         List.objects.get(id=list2.id).delete()
         response = self.client.get(reverse('DoIt:index'))
         self.assertSequenceEqual(response.context['list_of_lists'], [list1])
-        self.assertContains(response, 'list1')
-        self.assertNotContains(response, 'list2')
+        self.assertContains(response, str(list1.name))
+        self.assertNotContains(response, str(list2.name))
 
     def test_edit_list(self):
         """
@@ -341,19 +341,19 @@ class IndexViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.context['user'].is_authenticated)
         self.assertSequenceEqual(response.context['list_of_lists'], [list1, list2])
-        self.assertContains(response, 'list1')
-        self.assertContains(response, 'list2')
+        self.assertContains(response, str(list1.name))
+        self.assertContains(response, str(list2.name))
 
         list2.name = 'listupdated'
         list2.save()
         response = self.client.get(reverse('DoIt:index'))
         self.assertSequenceEqual(response.context['list_of_lists'], [list1, list2])
-        self.assertContains(response, 'list1')
+        self.assertContains(response, str(list1.name))
         self.assertNotContains(response, 'list2')
-        self.assertContains(response, 'listupdated')
+        self.assertContains(response, str(list2.name))
 
 
-class ListTasksViewTest(TestCase):
+class ListTasksTest(TestCase):
 
     def test_user_not_authenticated(self):
         """
@@ -394,7 +394,7 @@ class ListTasksViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.context['user'].is_authenticated)
         self.assertSequenceEqual(response.context['list_of_task'], [task1])
-        self.assertContains(response, 'task1')
+        self.assertContains(response, str(task1.name))
 
     def test_multiple_tasks_for_list(self):
         """
@@ -410,8 +410,15 @@ class ListTasksViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.context['user'].is_authenticated)
         self.assertSequenceEqual(response.context['list_of_task'], [task1, task2])
-        self.assertContains(response, 'task1')
-        self.assertContains(response, 'task2')
+        self.assertContains(response, str(task1.name))
+        self.assertContains(response, str(task2.name))
+
+        task3 = create_task('task3', listest)
+        response = self.client.get(reverse('DoIt:tasks', kwargs={'pk': listest.id}))
+        self.assertSequenceEqual(response.context['list_of_task'], [task1, task2, task3])
+        self.assertContains(response, str(task1.name))
+        self.assertContains(response, str(task2.name))
+        self.assertContains(response, str(task3.name))
 
     def test_delete_task(self):
         """
@@ -427,13 +434,13 @@ class ListTasksViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.context['user'].is_authenticated)
         self.assertSequenceEqual(response.context['list_of_task'], [task1, task2])
-        self.assertContains(response, 'task1')
-        self.assertContains(response, 'task2')
+        self.assertContains(response, str(task1.name))
+        self.assertContains(response, str(task2.name))
 
         Task.objects.get(id=task2.id).delete()
         response = self.client.get(reverse('DoIt:tasks', kwargs={'pk': listest.id}))
         self.assertSequenceEqual(response.context['list_of_task'], [task1])
-        self.assertContains(response, 'task1')
+        self.assertContains(response, str(task1.name))
         self.assertNotContains(response, 'task2')
 
     def test_edit_task(self):
@@ -450,16 +457,16 @@ class ListTasksViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.context['user'].is_authenticated)
         self.assertSequenceEqual(response.context['list_of_task'], [task1, task2])
-        self.assertContains(response, 'task1')
-        self.assertContains(response, 'task2')
+        self.assertContains(response, str(task1.name))
+        self.assertContains(response, str(task2.name))
 
         task2.name = 'taskupdated'
         task2.save()
         response = self.client.get(reverse('DoIt:tasks', kwargs={'pk': listest.id}))
         self.assertSequenceEqual(response.context['list_of_task'], [task1, task2])
-        self.assertContains(response, 'task1')
+        self.assertContains(response, str(task1.name))
         self.assertNotContains(response, 'task2')
-        self.assertContains(response, 'taskupdated')
+        self.assertContains(response, str(task2.name))
 
     def test_total_minutes_clock(self):
         """
@@ -481,3 +488,106 @@ class ListTasksViewTest(TestCase):
         self.assertContains(response, 'Remaining time to finish all tasks of the list is : '
                             + str(time_finish_list) + ' minutes')
         self.assertEqual(response.context['time_finish_list'], time_finish_list)
+
+
+class NewListTest(TestCase):
+
+    def test_user_not_authenticated(self):
+        """
+        If user isn't authenticated page returns code 200 and the message\
+        'Access Forbidden'
+        """
+        create_user('test', 'super123*secure')
+        response = self.client.get(reverse('DoIt:new_list'))
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.context['user'].is_authenticated)
+        self.assertContains(response, 'Access Forbidden')
+
+    def test_list_name_empty(self):
+        """
+        if user doesn't type anything in the name field \
+        page returns code 200 and the message 'This field is required'
+        """
+        user = create_user('test', 'super123*secure')
+        self.client.force_login(user)
+        response = self.client.post(reverse('DoIt:new_list'), {
+            'name': ''
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context['user'].is_authenticated)
+        self.assertContains(response, 'This field is required')
+
+    def test_list_added_successfully(self):
+        """
+        if name field isn't empty page returns code 302 \
+        redirects to index and displays the message 'List *name* created successfully'
+        """
+        user = create_user('test', 'super123*secure')
+        self.client.force_login(user)
+        response = self.client.post(reverse('DoIt:new_list'), {
+            'name': 'test'
+        })
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('DoIt:index'))
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), 'List test created successfully')
+
+
+class EditListTest(TestCase):
+
+    def test_user_not_authenticated(self):
+        """
+        if any user tries to edit a list without being logged in\
+        page should return a 200 code, and a message 'Access Forbidden'
+        """
+        user = create_user('test', 'super123*secure')
+        listest = create_list('list', user)
+        response = self.client.get(reverse('DoIt:list_edit', kwargs={'pk': listest.id}))
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.context['user'].is_authenticated)
+        self.assertContains(response, 'Access Forbidden')
+
+    def test_load_list_info_on_form(self):
+        """
+        test if all info are correctly loaded into the edit page
+        """
+        user = create_user('test', 'super123*secure')
+        self.client.force_login(user)
+        listest = create_list('list1', user)
+        response = self.client.get(reverse('DoIt:list_edit', kwargs={'pk': listest.id}))
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context['user'].is_authenticated)
+        self.assertEqual(response.context['object'], listest)
+        self.assertContains(response, ' value="' + str(listest.name) + '"')
+        self.assertContains(response, 'selected>' + str(listest.user))
+
+
+class DeleteListTest(TestCase):
+
+    def test_user_not_authenticated(self):
+        """
+        if any user tries to delete a list without being logged in\
+        page should return a 200 code, and a message 'Access Forbidden'
+        """
+        user = create_user('test', 'super123*secure')
+        listest = create_list('list', user)
+        response = self.client.get(reverse('DoIt:list_delete', kwargs={'pk': listest.id}))
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.context['user'].is_authenticated)
+        self.assertContains(response, 'Access Forbidden')
+
+    def test_confirm_delete(self):
+        """
+        if confirm works, page returns index page, with message\
+        'List *name*  deleted successfully'
+        """
+        user = create_user('test', 'super123*secure')
+        self.client.force_login(user)
+        listest = create_list('list1', user)
+        response = self.client.post(reverse('DoIt:list_delete', kwargs={'pk': listest.id}))
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('DoIt:index'))
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), 'List ' + str(listest.name) + ' deleted successfully')
