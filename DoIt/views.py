@@ -4,7 +4,8 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib.messages.views import SuccessMessageMixin, messages
-from django.shortcuts import get_object_or_404
+from django.http import Http404
+from django.shortcuts import get_object_or_404, get_list_or_404
 from django.urls import reverse_lazy
 from django.views import generic
 
@@ -17,7 +18,10 @@ class IndexView(generic.ListView):
 
     def get_queryset(self):
         if self.request.user.is_authenticated:
-            return List.objects.filter(user=self.request.user)
+            try:
+                return get_list_or_404(List, user=self.request.user)
+            except Http404:
+                return []
 
     def get_context_data(self, *, object_list=None, **kwargs):
         if self.request.user.is_authenticated:
@@ -31,14 +35,18 @@ class ListTasksView(generic.ListView):
     context_object_name = 'list_of_task'
 
     def get_queryset(self):
-        return Task.objects.filter(list=self.kwargs.get('pk'))
+        try:
+            return get_list_or_404(Task.objects.order_by('-is_important'), list=self.kwargs.get('pk'))
+        except Http404:
+            return []
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super(ListTasksView, self).get_context_data(**kwargs)
         tasks = context['list_of_task']
         total = 0
         for task in tasks:
-            total = total + int(task.time_it_takes or 0)
+            if not task.is_done:
+                total = total + int(task.time_it_takes or 0)
         context['time_finish_list'] = total
         return context
 

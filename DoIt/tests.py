@@ -1,5 +1,7 @@
 from django.contrib.auth.models import User
 from django.contrib.messages import get_messages
+from django.http import Http404
+from django.shortcuts import get_object_or_404
 from django.test import TestCase
 from django.urls import reverse
 
@@ -17,8 +19,9 @@ def create_list(name, user):
     return List.objects.create(name=name, user=user)
 
 
-def create_task(name, lit, time=None):
-    return Task.objects.create(name=name, list=lit, time_it_takes=time)
+def create_task(name, lit, time=None, is_important=None, is_done=None):
+    return Task.objects.create(name=name, list=lit, time_it_takes=time, is_done=is_done,
+                               is_important=is_important)
 
 
 class UserSignUpTest(TestCase):
@@ -470,24 +473,44 @@ class ListTasksTest(TestCase):
 
     def test_total_minutes_clock(self):
         """
-        Test the sum of all the minutes to conclude all tasks of one list, \
-        page returns the sum in minutes of all tasks
+        Test the sum of all the minutes to conclude all tasks of one list that \
+        aren't done, page returns the sum in minutes of all tasks
         """
         user = create_user('test', 'super123*secure')
         self.client.force_login(user)
         listest = create_list('list1', user)
-        task1 = create_task('task1', listest, 20)
-        task2 = create_task('task2', listest, 45)
+        task1 = create_task('task1', listest, 20, is_done=True)
+        task2 = create_task('task2', listest, 45, is_done=True)
         task3 = create_task('task3', listest, 1000)
         task4 = create_task('task4', listest, 350)
-        time_finish_list = task1.time_it_takes + task2.time_it_takes + \
-                           task3.time_it_takes + task4.time_it_takes
+        time_finish_list = task3.time_it_takes + task4.time_it_takes
         response = self.client.get(reverse('DoIt:tasks', kwargs={'pk': listest.id}))
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.context['user'].is_authenticated)
         self.assertContains(response, 'Remaining time to finish all tasks of the list is : '
                             + str(time_finish_list) + ' minutes')
         self.assertEqual(response.context['time_finish_list'], time_finish_list)
+
+    def test_ordering_tasks_of_list_by_importance(self):
+        """
+        if user is authenticated and there's multiple tasks for that list\
+        page return code 200, and the name of the tasks is shown ordered by importance
+        """
+        user = create_user('test', 'super123*secure')
+        self.client.force_login(user)
+        listest = create_list('list1', user)
+        task1 = create_task('task1', listest)
+        task2 = create_task('task2', listest)
+        task3 = create_task('task3', listest, is_important=True)
+        task4 = create_task('task4', listest)
+        task5 = create_task('task5', listest, is_important= True)
+        response = self.client.get(reverse('DoIt:tasks', kwargs={'pk': listest.id}))
+        self.assertSequenceEqual(response.context['list_of_task'], [task3, task5, task1, task2, task4])
+        self.assertContains(response, str(task1.name))
+        self.assertContains(response, str(task2.name))
+        self.assertContains(response, str(task3.name))
+        self.assertContains(response, str(task4.name))
+        self.assertContains(response, str(task5.name))
 
 
 class NewListTest(TestCase):
@@ -591,3 +614,129 @@ class DeleteListTest(TestCase):
         self.assertEqual(response.url, reverse('DoIt:index'))
         self.assertEqual(len(messages), 1)
         self.assertEqual(str(messages[0]), 'List ' + str(listest.name) + ' deleted successfully')
+
+
+class NewTaskTest(TestCase):
+
+    def test_user_not_authenticated(self):
+        """
+        If user isn't authenticated page returns code 200 and the message\
+        'Access Forbidden'
+        """
+        user = create_user('test', 'super123*secure')
+        listest = create_list('list1', user)
+        response = self.client.get(reverse('DoIt:new_task', kwargs={'pk': listest.id}))
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.context['user'].is_authenticated)
+        self.assertContains(response, 'Access Forbidden')
+
+    def test_task_name_empty(self):
+        """
+        if user doesn't type anything in the name field \
+        page returns code 200 and the message 'This field is required'
+        """
+        user = create_user('test', 'super123*secure')
+        self.client.force_login(user)
+        listest = create_list('list1', user)
+        response = self.client.post(reverse('DoIt:new_task', kwargs={'pk': listest.id}), {
+            'name': ''
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context['user'].is_authenticated)
+        self.assertContains(response, 'This field is required')
+
+    def test_task_added_successfully(self):
+        """
+        if name field isn't empty page returns code 302 \
+        redirects to list tasks and displays the message 'task *name* created successfully'
+        """
+        user = create_user('test', 'super123*secure')
+        self.client.force_login(user)
+        listest = create_list('list1', user)
+        response = self.client.post(reverse('DoIt:new_task', kwargs={'pk': listest.id}), {
+            'name': 'test'
+        })
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('DoIt:tasks', kwargs={'pk': listest.id}))
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), 'Task test created successfully')
+
+        response = self.client.post(reverse('DoIt:new_task', kwargs={'pk': listest.id}), {
+            'name': 'test2',
+            'description': 'description test',
+            'is_done': 'Yes',
+            'start_date': '01/14/1987',
+            'end_date': '08/20/2021',
+            'time_it_takes': '5',
+            'is_important': 'No'
+        })
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('DoIt:tasks', kwargs={'pk': listest.id}))
+        self.assertNotEqual(get_object_or_404(Task, name='test2'), Http404)
+        self.assertEqual(len(messages), 2)
+        self.assertEqual(str(messages[1]), 'Task test2 created successfully')
+
+
+class EditTaskTest(TestCase):
+
+    def test_user_not_authenticated(self):
+        """
+        if any user tries to edit a task without being logged in\
+        page should return a 200 code, and a message 'Access Forbidden'
+        """
+        user = create_user('test', 'super123*secure')
+        listest = create_list('list', user)
+        task = create_task('test1', listest)
+        response = self.client.get(reverse('DoIt:task_edit', kwargs={'pk': task.id}))
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.context['user'].is_authenticated)
+        self.assertContains(response, 'Access Forbidden')
+
+    def test_load_list_info_on_form(self):
+        """
+        test if info are correctly loaded into the edit page
+        """
+        user = create_user('test', 'super123*secure')
+        self.client.force_login(user)
+        listest = create_list('list1', user)
+        task = create_task('test1', listest)
+        response = self.client.get(reverse('DoIt:task_edit', kwargs={'pk': task.id}))
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.context['user'].is_authenticated)
+        self.assertEqual(response.context['object'], task)
+        self.assertContains(response, ' value="' + str(task.name) + '"')
+        self.assertEqual(response.context['list'], listest)
+
+
+class DeleteTaskTest(TestCase):
+
+    def test_user_not_authenticated(self):
+        """
+        if any user tries to delete a task without being logged in\
+        page should return a 200 code, and a message 'Access Forbidden'
+        """
+        user = create_user('test', 'super123*secure')
+        listest = create_list('list', user)
+        task = create_task('test1', listest)
+        response = self.client.get(reverse('DoIt:task_delete', kwargs={'pk': task.id}))
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.context['user'].is_authenticated)
+        self.assertContains(response, 'Access Forbidden')
+
+    def test_confirm_delete(self):
+        """
+        if confirm works, page returns list tasks page, with message\
+        'Task *name* deleted successfully'
+        """
+        user = create_user('test', 'super123*secure')
+        self.client.force_login(user)
+        listest = create_list('list1', user)
+        task = create_task('test1', listest)
+        response = self.client.post(reverse('DoIt:task_delete', kwargs={'pk': task.id}))
+        messages = list(get_messages(response.wsgi_request))
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse('DoIt:tasks', kwargs={'pk': listest.id}))
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(str(messages[0]), 'Task ' + str(task.name) + ' deleted successfully')
