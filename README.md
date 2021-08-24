@@ -13,10 +13,10 @@ Quick start
 
 3. Install Django: ``python3 -m pip install Django``
 
-4. Use ``git clone to clone this`` repository
+4. Use ``git clone`` to clone this repository
 
 5. Run ``python3 manage.py runserver`` to Start the development server. 
 
-6. visit http://127.0.0.1:8000/admin/ to create a user (you'll need the Admin app enabled).
+6. Run ``python3 manage.py createsuperuser`` to create a user(others can be added in the login page, clicking in 'sign up'). 
 
 7. Visit http://127.0.0.1:8000/login/ to log in with the created user and enjoy the app.
